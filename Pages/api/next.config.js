@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  i18n: {
-    locales: ["ar", "fr", "en"],
-    defaultLocale: "ar",
+  images: {
+    domains: ["via.placeholder.com"], // لاحقًا يمكن إضافة دومين صورتك
   },
 };
 
