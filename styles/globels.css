@@ -5,4 +5,10 @@
 body {
   font-family: "Cairo", sans-serif; /* دعم العربية */
   direction: rtl; /* المحتوى على اليمين */
+  background-color: #000000; /* خلفية سوداء */
+  color: #ffffff; /* نص أبيض */
+}
+
+button {
+  cursor: pointer;
 }
