@@ -1,68 +1,89 @@
-    
 import { useState } from "react";
 
 export default function Home() {
-  const [prompt, setPrompt] = useState("");
+  const [level, setLevel] = useState("");
+  const [subject, setSubject] = useState("");
+  const [type, setType] = useState("");
+  const [language, setLanguage] = useState("ar"); // ar / fr / en
   const [result, setResult] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
-    });
-    const data = await res.json();
-    if (data.success) setResult(data.result);
-    else setResult("حدث خطأ، حاول مرة أخرى");
+  const generateContent = async () => {
+    if (!level || !subject || !type) {
+      alert("يرجى اختيار كل الخيارات أولاً!");
+      return;
+    }
+    setResult("جاري التوليد...");
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level, subject, type, language }),
+      });
+      const data = await response.json();
+      setResult(data.result || "لم يتم الحصول على أي نتيجة.");
+    } catch (error) {
+      setResult("حدث خطأ في الاتصال بالذكاء الاصطناعي.");
+    }
   };
 
   return (
-    <main className="min-h-screen p-6 text-right">
-      <h1 className="text-4xl font-bold mb-6 border-2 border-blue-500 p-2 rounded flex items-center justify-end gap-2">
-        Prof Dali Nadjib
-      </h1>
-
-      <form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-2">
-        <textarea
-          className="p-2 rounded bg-gray-800 text-white"
-          placeholder="اكتب طلبك هنا..."
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 p-2 rounded hover:bg-blue-700 transition"
-        >
-          أرسل
-        </button>
-      </form>
-
-      {result && (
-        <div className="bg-gray-900 p-4 rounded shadow text-white">
-          {result}
-        </div>
-      )}
-
-      <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-right">
-        <div className="bg-gray-800 p-4 rounded-lg shadow flex flex-col items-end">
-          <span className="text-4xl">📚</span>
-          <p className="mt-2 font-semibold">الدروس</p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg shadow flex flex-col items-end">
-          <span className="text-4xl">📝</span>
-          <p className="mt-2 font-semibold">الاختبارات</p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg shadow flex flex-col items-end">
-          <span className="text-4xl">📁</span>
-          <p className="mt-2 font-semibold">المراجعات</p>
-        </div>
-        <div className="bg-gray-800 p-4 rounded-lg shadow flex flex-col items-end">
-          <span className="text-4xl">💡</span>
-          <p className="mt-2 font-semibold">أفكار وملاحظات</p>
-        </div>
+    <div style={{ padding: "20px" }}>
+      {/* رأس التطبيق */}
+      <div className="header">
+        {/* لاحقًا يمكن وضع صورتك هنا */}
+        <img src="https://via.placeholder.com/50" alt="Prof Dali" />
+        <h1>prof - dali nadjib</h1>
       </div>
-    </main>
+
+      {/* اختيار الطور */}
+      <div className="select-box">
+        <label>اختر الطور:</label>
+        <select value={level} onChange={(e) => setLevel(e.target.value)}>
+          <option value="">-- اختر الطور --</option>
+          <option value="primaire">ابتدائي</option>
+          <option value="college">متوسط</option>
+          <option value="lycee">ثانوي</option>
+        </select>
+      </div>
+
+      {/* اختيار المادة */}
+      <div className="select-box">
+        <label>اختر المادة:</label>
+        <select value={subject} onChange={(e) => setSubject(e.target.value)}>
+          <option value="">-- اختر المادة --</option>
+          <option value="math">رياضيات</option>
+          <option value="francais">فرنسية</option>
+          <option value="anglais">إنجليزية</option>
+          <option value="science">علوم</option>
+        </select>
+      </div>
+
+      {/* اختيار نوع المستند */}
+      <div className="select-box">
+        <label>اختر نوع المستند:</label>
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          <option value="">-- اختر النوع --</option>
+          <option value="memoire">مذكرة</option>
+          <option value="test">فرض</option>
+          <option value="exam">اختبار</option>
+        </select>
+      </div>
+
+      {/* اختيار اللغة */}
+      <div className="select-box">
+        <label>اختر اللغة:</label>
+        <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+          <option value="ar">العربية</option>
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      {/* زر التوليد */}
+      <button onClick={generateContent}>إنشاء / توليد</button>
+
+      {/* عرض النتيجة */}
+      <div id="result">{result}</div>
+    </div>
   );
 }
-
